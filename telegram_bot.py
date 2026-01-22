@@ -8,7 +8,7 @@ import os
 # --- CONFIGURATION ---
 # We use os.environ to read the token from Render safely
 BOT_TOKEN = os.environ.get("8540514459:AAE58lJVaQLxYvCQNtQSZx9W1flYJ5c6IyM") 
-CHANNEL_USERNAME = os.environ.get("livestockmarketnewbot") 
+CHANNEL_USERNAME = os.environ.get("@stockmarketnewsofficiall") 
 RSS_URL = "https://news.google.com/rss/search?q=stock+market+india+when:1h&ceid=IN:en&hl=en-IN&gl=IN"
 
 bot = telebot.TeleBot("8540514459:AAE58lJVaQLxYvCQNtQSZx9W1flYJ5c6IyM")
@@ -31,7 +31,7 @@ def get_latest_news():
 def send_to_telegram(title, link):
     try:
         msg = f"🚨 *MARKET UPDATE* 🚨\n\n{title}\n\n[Read Story]({link})"
-        bot.send_message(livestockmarketnewbot, msg, parse_mode='Markdown')
+        bot.send_message(@stockmarketnewsofficiall, msg, parse_mode='Markdown')
     except Exception as e:
         print(f"Send Error: {e}")
 
@@ -56,4 +56,5 @@ if __name__ == "__main__":
     # Render assigns a port automatically
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
