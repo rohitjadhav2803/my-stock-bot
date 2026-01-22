@@ -1,2 +1,4 @@
 pyTelegramBotAPI
 feedparser
+flask
+gunicorn
