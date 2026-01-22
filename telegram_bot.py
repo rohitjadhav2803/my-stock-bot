@@ -11,7 +11,7 @@ BOT_TOKEN = os.environ.get("8540514459:AAE58lJVaQLxYvCQNtQSZx9W1flYJ5c6IyM")
 CHANNEL_USERNAME = os.environ.get("livestockmarketnewbot") 
 RSS_URL = "https://news.google.com/rss/search?q=stock+market+india+when:1h&ceid=IN:en&hl=en-IN&gl=IN"
 
-bot = telebot.TeleBot(8540514459:AAE58lJVaQLxYvCQNtQSZx9W1flYJ5c6IyM)
+bot = telebot.TeleBot("8540514459:AAE58lJVaQLxYvCQNtQSZx9W1flYJ5c6IyM")
 app = Flask(__name__)
 last_title = None
 
@@ -56,3 +56,4 @@ if __name__ == "__main__":
     # Render assigns a port automatically
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
