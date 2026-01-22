@@ -4,14 +4,27 @@ import telebot
 from flask import Flask
 import threading
 import os
+import sys
 
 # --- CONFIGURATION ---
-# We use os.environ to read the token from Render safely
-BOT_TOKEN = os.environ.get("8540514459:AAE58lJVaQLxYvCQNtQSZx9W1flYJ5c6IyM") 
-CHANNEL_USERNAME = os.environ.get("@stockmarketnewsofficiall") 
+# 1. We get the variables from Render (Secure)
+BOT_TOKEN = os.environ.get("BOT_TOKEN")
+CHANNEL_USERNAME = os.environ.get("CHANNEL_USERNAME")
 RSS_URL = "https://news.google.com/rss/search?q=stock+market+india+when:1h&ceid=IN:en&hl=en-IN&gl=IN"
 
-bot = telebot.TeleBot("8540514459:AAE58lJVaQLxYvCQNtQSZx9W1flYJ5c6IyM")
+# 2. Safety Check: If variables are missing, warn us instead of crashing
+if not BOT_TOKEN:
+    print("❌ ERROR: BOT_TOKEN is missing in Render Environment Variables.")
+    # Fallback for testing (only if you really need it, but better to use Render vars)
+    # BOT_TOKEN = "8540514459:AAE58lJVaQLxYvCQNtQSZx9W1flYJ5c6IyM" 
+
+if not CHANNEL_USERNAME:
+    print("❌ ERROR: CHANNEL_USERNAME is missing.")
+    # Fallback
+    # CHANNEL_USERNAME = "@stockmarketnewsofficiall"
+
+# 3. Initialize Bot
+bot = telebot.TeleBot(BOT_TOKEN)
 app = Flask(__name__)
 last_title = None
 
@@ -25,36 +38,35 @@ def get_latest_news():
                 last_title = latest.title
                 return latest.title, latest.link
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Error fetching news: {e}")
     return None, None
 
 def send_to_telegram(title, link):
     try:
         msg = f"🚨 *MARKET UPDATE* 🚨\n\n{title}\n\n[Read Story]({link})"
-        bot.send_message(@stockmarketnewsofficiall, msg, parse_mode='Markdown')
+        # 4. FIXED: Use the variable CHANNEL_USERNAME
+        bot.send_message(CHANNEL_USERNAME, msg, parse_mode='Markdown')
+        print(f"✅ Sent message to {CHANNEL_USERNAME}")
     except Exception as e:
-        print(f"Send Error: {e}")
+        print(f"❌ Send Error: {e}")
 
-# --- THE BOT LOOP (Runs in Background) ---
+# --- THE BOT LOOP ---
 def start_bot_loop():
     print("Bot loop started...")
     while True:
         title, link = get_latest_news()
         if title:
             send_to_telegram(title, link)
-        time.sleep(300) # Check every 5 minutes
+        time.sleep(300) # 5 minutes
 
-# Start bot in a separate thread so it doesn't block the web server
 threading.Thread(target=start_bot_loop, daemon=True).start()
 
-# --- THE FAKE WEB SERVER (To keep Render happy) ---
+# --- WEB SERVER ---
 @app.route('/')
 def home():
     return "Bot is running 24/7!"
 
 if __name__ == "__main__":
-    # Render assigns a port automatically
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
-
-
+    
